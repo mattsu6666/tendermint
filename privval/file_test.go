@@ -3,6 +3,7 @@ package privval
 import (
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"os"
 	"testing"
@@ -13,7 +14,6 @@ import (
 
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	"github.com/tendermint/tendermint/crypto/tmhash"
-	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmtime "github.com/tendermint/tendermint/libs/time"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -105,8 +105,8 @@ func TestUnmarshalValidatorState(t *testing.T) {
 	}`
 
 	val := FilePVLastSignState{}
-	err := tmjson.Unmarshal([]byte(serialized), &val)
-	require.NoError(t, err)
+	err := json.Unmarshal([]byte(serialized), &val)
+	require.Nil(err, "%+v", err)
 
 	// make sure the values match
 	assert.EqualValues(t, val.Height, 1)
@@ -114,9 +114,9 @@ func TestUnmarshalValidatorState(t *testing.T) {
 	assert.EqualValues(t, val.Step, 1)
 
 	// export it and make sure it is the same
-	out, err := tmjson.Marshal(val)
-	require.NoError(t, err)
-	assert.JSONEq(t, serialized, string(out))
+	out, err := json.Marshal(val)
+	require.Nil(err, "%+v", err)
+	assert.JSONEq(serialized, string(out))
 }
 
 func TestUnmarshalValidatorKey(t *testing.T) {
@@ -142,8 +142,8 @@ func TestUnmarshalValidatorKey(t *testing.T) {
 }`, addr, pubB64, privB64)
 
 	val := FilePVKey{}
-	err := tmjson.Unmarshal([]byte(serialized), &val)
-	require.NoError(t, err)
+	err := json.Unmarshal([]byte(serialized), &val)
+	require.Nil(err, "%+v", err)
 
 	// make sure the values match
 	assert.EqualValues(t, addr, val.Address)
@@ -151,9 +151,9 @@ func TestUnmarshalValidatorKey(t *testing.T) {
 	assert.EqualValues(t, privKey, val.PrivKey)
 
 	// export it and make sure it is the same
-	out, err := tmjson.Marshal(val)
-	require.NoError(t, err)
-	assert.JSONEq(t, serialized, string(out))
+	out, err := json.Marshal(val)
+	require.Nil(err, "%+v", err)
+	assert.JSONEq(serialized, string(out))
 }
 
 func TestSignVote(t *testing.T) {
